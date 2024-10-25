@@ -26,8 +26,6 @@
 
     private async void KeyPressed(KeyboardEventArgs args)
     {
-        await JS.InvokeVoidAsync("console.log", $"{Cell.Row}, {Cell.Column}, {args.Key}");
-        
         if (int.TryParse(args.Key, out int intValue)) {
             if (intValue > 0 && intValue <= 9) {
                 Cell.Value = intValue;
