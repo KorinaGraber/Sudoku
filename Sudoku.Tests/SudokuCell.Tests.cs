@@ -20,4 +20,22 @@ public class SudokuTests
         cellText.MarkupMatches("0");
         cut.Instance.Cell.Value.Equals(0);
     }
+
+    [Fact]
+    public void Should_clear_the_cell_on_a_backspace_keypress()
+    {
+        // Arrange
+        using var ctx = new TestContext();
+        var cut = ctx.RenderComponent<SudokuCell>(parameters => parameters
+            .Add(p => p.Cell, new Cell(0, 0)));
+        var cellElement = cut.Find(".cell");
+
+        // Act
+        cut.Find(".cell").KeyDown("Backspace");
+
+        // Assert
+        var cellText = cellElement.TextContent;
+        cellText.MarkupMatches("0");
+        cut.Instance.Cell.Value.Equals(0);
+    }
 }
