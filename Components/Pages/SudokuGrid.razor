@@ -1,0 +1,74 @@
+@page "/grid"
+@rendermode InteractiveServer
+@inject IJSRuntime JS
+
+<PageTitle>Sudoku - Empty Grid</PageTitle>
+
+<h1>Empty Grid</h1>
+
+<div class="wrap">
+    <div class="grid">
+        @for(int x = 0; x < 9; x++) {
+            <div class="column">
+                @for (int y = 0; y < 9; y++) {
+                    <SudokuCell Cell="Grid[x, y]" SetValue="SetValue" ChangeFocus="ChangeFocus" />
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private Cell[,] Grid = new Cell[9, 9];
+    private Cell? FocusedCell = null;
+
+    protected override void OnInitialized()
+    {
+        for(int x = 0; x < 9; x++) {
+            for (int y = 0; y < 9; y++) {
+                Grid[x, y] = new Cell(x, y);
+            }
+        }
+    }
+        
+    private async void SetValue(int value)
+    {
+        await JS.InvokeVoidAsync("console.log", $"From parent {value}");
+    }
+    
+    private async void ChangeFocus(CellFocusEvent value)
+    {
+        if (FocusedCell != null) {
+            FocusedCell.Focused = false;
+        }
+
+        int rowToFocus = value.Cell.Row;
+        int columnToFocus = value.Cell.Column;
+
+        switch(value.ChangeEvent) {
+            case "ArrowUp":
+                rowToFocus--;
+                break;
+            case "ArrowDown":
+                rowToFocus++;
+                break;
+            case "ArrowLeft":
+                columnToFocus--;
+                break;
+            case "ArrowRight":
+                columnToFocus++;
+                break;
+        }
+
+        if (rowToFocus > 8
+        || rowToFocus < 0
+        || columnToFocus > 8
+        || columnToFocus < 0) {
+            return;
+        }
+        
+        var cellToFocus = Grid[columnToFocus, rowToFocus];
+        cellToFocus.Focused = true;
+        FocusedCell = cellToFocus;
+    }
+}

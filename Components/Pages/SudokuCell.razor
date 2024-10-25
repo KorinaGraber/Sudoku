@@ -1,0 +1,50 @@
+@rendermode InteractiveServer
+@inject IJSRuntime JS
+
+<div class="cell" tabindex="@Cell.Row @Cell.Column" @ref="cellElement" @onkeydown="KeyPressed">@Cell.Value</div>
+
+@code {
+    private Cell _cell;
+    [Parameter]
+    public Cell Cell { 
+        get => _cell; 
+        set {
+            _cell = value;
+            if (_cell.Focused) {
+                cellElement.FocusAsync();
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<int> SetValue { get; set; }
+
+    [Parameter]
+    public EventCallback<CellFocusEvent> ChangeFocus { get; set; }
+
+    private ElementReference cellElement;
+
+    private async void KeyPressed(KeyboardEventArgs args)
+    {
+        await JS.InvokeVoidAsync("console.log", $"{Cell.Row}, {Cell.Column}, {args.Key}");
+        
+        if (int.TryParse(args.Key, out int intValue)) {
+            if (intValue > 0 && intValue <= 9) {
+                Cell.Value = intValue;
+                await SetValue.InvokeAsync(Cell.Value);
+            }
+        }
+
+        if (args.Key == "Delete" || args.Key == "Backspace") {
+            Cell.Value = 0;
+            await SetValue.InvokeAsync(Cell.Value);
+        }
+        
+        if (args.Key == "ArrowUp" 
+        || args.Key == "ArrowDown"
+        || args.Key == "ArrowLeft"
+        || args.Key == "ArrowRight") {
+            await ChangeFocus.InvokeAsync(new CellFocusEvent { Cell = Cell, ChangeEvent = args.Key });
+        }
+    }
+}
