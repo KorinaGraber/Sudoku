@@ -19,8 +19,8 @@
 </div>
 
 @code {
-    private Cell[,] Grid = new Cell[9, 9];
-    private Cell? FocusedCell = null;
+    public Cell[,] Grid { get; set; } = new Cell[9, 9];
+    public Cell? FocusedCell { get; set; } = null;
 
     protected override void OnInitialized()
     {
@@ -31,12 +31,12 @@
         }
     }
         
-    private async void SetValue(int? value)
+    public async void SetValue(int? value)
     {
         await JS.InvokeVoidAsync("console.log", $"From parent {value}");
     }
     
-    private async void ChangeFocus(CellFocusEvent value)
+    public void ChangeFocus(CellFocusEvent value)
     {
         if (FocusedCell != null) {
             FocusedCell.Focused = false;
