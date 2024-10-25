@@ -4,7 +4,7 @@
 <div class="cell" tabindex="@Cell.Row @Cell.Column" @ref="cellElement" @onkeydown="KeyPressed">@Cell.Value</div>
 
 @code {
-    private Cell _cell;
+    private Cell _cell = new Cell(0, 0);
     [Parameter]
     public Cell Cell { 
         get => _cell; 
