@@ -17,7 +17,7 @@
     }
 
     [Parameter]
-    public EventCallback<int> SetValue { get; set; }
+    public EventCallback<int?> SetValue { get; set; }
 
     [Parameter]
     public EventCallback<CellFocusEvent> ChangeFocus { get; set; }
@@ -36,7 +36,7 @@
         }
 
         if (args.Key == "Delete" || args.Key == "Backspace") {
-            Cell.Value = 0;
+            Cell.Value = null;
             await SetValue.InvokeAsync(Cell.Value);
         }
         

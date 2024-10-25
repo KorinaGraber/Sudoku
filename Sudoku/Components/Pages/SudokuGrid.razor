@@ -31,7 +31,7 @@
         }
     }
         
-    private async void SetValue(int value)
+    private async void SetValue(int? value)
     {
         await JS.InvokeVoidAsync("console.log", $"From parent {value}");
     }

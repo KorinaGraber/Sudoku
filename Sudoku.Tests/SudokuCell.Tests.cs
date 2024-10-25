@@ -17,8 +17,8 @@ public class SudokuTests
 
         // Assert
         var cellText = cellElement.TextContent;
-        cellText.MarkupMatches("0");
-        cut.Instance.Cell.Value.Equals(0);
+        cellText.MarkupMatches("");
+        cut.Instance.Cell.Value.Equals(null);
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public class SudokuTests
 
         // Assert
         var cellText = cellElement.TextContent;
-        cellText.MarkupMatches("0");
-        cut.Instance.Cell.Value.Equals(0);
+        cellText.MarkupMatches("");
+        cut.Instance.Cell.Value.Equals(null);
     }
 }
