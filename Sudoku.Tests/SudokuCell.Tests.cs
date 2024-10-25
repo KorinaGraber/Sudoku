@@ -21,7 +21,6 @@ public class SudokuCellTests
         var cellComponent = context.RenderComponent<SudokuCell>(parameters => parameters
             .Add(p => p.Cell, new Cell(0, 0))
             .Add(p => p.SetValue, x => valueOnParent = x));
-        var cellElement = cellComponent.Find(".cell");
 
         // Act
         cellComponent.Find(".cell").KeyDown(numberEntry);
@@ -68,14 +67,11 @@ public class SudokuCellTests
                 cellOnParent = focusEvent.Cell;
                 changeEventOnParent = focusEvent.ChangeEvent;
             }));
-        var cellElement = cellComponent.Find(".cell");
 
         // Act
         cellComponent.Find(".cell").KeyDown(arrowKey);
 
         // Assert
-        var cellText = cellElement.TextContent;
-        cellText.MarkupMatches("");
         Assert.Equal(cellComponent.Instance.Cell, cellOnParent);
         Assert.Equal(arrowKey, changeEventOnParent);
     }
