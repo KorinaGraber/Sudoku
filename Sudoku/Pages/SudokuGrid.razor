@@ -21,7 +21,7 @@
         }
     </div>
     <div class="grid-actions">
-        <SudokuAction Action="Delete" TriggerAction="NumberEntered" />
+        <SudokuAction Action="Delete" TriggerAction="Delete" />
     </div>
 </div>
 
@@ -87,6 +87,19 @@
 
     public async void NumberEntered(string numberAsString)
     {
-        await JS.InvokeVoidAsync("console.log", $"Entered {numberAsString}");
+        if (FocusedCell != null && int.TryParse(numberAsString, out int intValue)) {
+            if (intValue > 0 && intValue <= 9) {
+                FocusedCell.Value = intValue;
+                await InvokeAsync(() => StateHasChanged());
+            }
+        }
+    }
+
+    public async void Delete()
+    {
+        if (FocusedCell != null) {
+            FocusedCell.Value = null;
+            await InvokeAsync(() => StateHasChanged());
+        }
     }
 }
