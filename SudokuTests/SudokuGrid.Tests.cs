@@ -1,5 +1,5 @@
 using Bunit;
-using Sudoku.Components.Pages;
+using Sudoku.Pages;
 
 public class SudokuGridTests
 {
