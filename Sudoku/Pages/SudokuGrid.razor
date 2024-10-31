@@ -49,6 +49,12 @@
             FocusedCell.Focused = false;
         }
 
+        if (value.ChangeEvent == null) {
+            FocusedCell = value.Cell;
+            FocusedCell.Focused = true;
+            return;
+        }
+        
         int rowToFocus = value.Cell.Row;
         int columnToFocus = value.Cell.Column;
 

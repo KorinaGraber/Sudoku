@@ -1,6 +1,10 @@
 @inject IJSRuntime JS
 
-<div class="cell" tabindex="@Cell.Row @Cell.Column" @ref="cellElement" @onkeydown="KeyPressed">@Cell.Value</div>
+<div class="cell" 
+    tabindex="@Cell.Row @Cell.Column" 
+    @ref="cellElement" 
+    @onkeydown="KeyPressed" 
+    @onfocusin=@(e => ChangeFocus.InvokeAsync(new CellFocusEvent { Cell = Cell }))>@Cell.Value</div>
 
 @code {
     private Cell _cell = new Cell(0, 0);

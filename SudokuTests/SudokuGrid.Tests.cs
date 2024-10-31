@@ -3,6 +3,30 @@ using Sudoku.Pages;
 
 public class SudokuGridTests
 {
+    [Fact]
+    public void Should_focus_the_designated_cell_when_no_change_event_is_provided()
+    {
+        // Arrange
+        using var context = new TestContext();
+        var random = new Random();
+        var gridComponent = context.RenderComponent<SudokuGrid>();
+        var currentColumn = random.Next(0, 8);
+        var currentRow = random.Next(0, 8);
+        var cellToFocus = gridComponent.Instance.Grid[currentColumn, currentRow];
+        var focusEvent = new CellFocusEvent
+        {
+            Cell = cellToFocus,
+            ChangeEvent = null,
+        };
+
+        // Act
+        gridComponent.Instance.ChangeFocus(focusEvent);
+
+        // Assert
+        Assert.Equal(cellToFocus, gridComponent.Instance.FocusedCell);
+        Assert.True(cellToFocus.Focused);
+    }
+
     [Theory]
     [InlineData(0)]
     [InlineData(1)]
