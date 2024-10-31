@@ -2,23 +2,11 @@
     display: block;
 }
 
-.grid {
+.grid, .grid-actions {
     display: flex;
 }
 
 .column {
     display: flex;
     flex-direction: column;
-}
-
-.cell {
-    height: 3em;
-    width: 3em;
-    border-width: 0.1em;
-    border-style: solid;
-    cursor: pointer;
-}
-
-.cell:focus {
-    background-color: #d0d0d0;
 }

@@ -15,6 +15,14 @@
             </div>
         }
     </div>
+    <div class="grid-actions">
+        @for(int x = 1; x < 10; x++) {
+            <SudokuAction Action="@x.ToString()" TriggerAction="NumberEntered" />
+        }
+    </div>
+    <div class="grid-actions">
+        <SudokuAction Action="Delete" TriggerAction="NumberEntered" />
+    </div>
 </div>
 
 @code {
@@ -69,5 +77,10 @@
         var cellToFocus = Grid[columnToFocus, rowToFocus];
         cellToFocus.Focused = true;
         FocusedCell = cellToFocus;
+    }
+
+    public async void NumberEntered(string numberAsString)
+    {
+        await JS.InvokeVoidAsync("console.log", $"Entered {numberAsString}");
     }
 }

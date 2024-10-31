@@ -1,0 +1,19 @@
+
+.cell-action {
+    height: 3em;
+    width: 3em;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 3em;
+    font-weight: bold;
+    font-size: large;
+}
+
+@media only screen and (max-width: 600px) {
+    .cell-action {
+        height: 2em;
+        width: 2em;
+        line-height: 2em;
+        font-size: medium;
+    }
+}
