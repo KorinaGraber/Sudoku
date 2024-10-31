@@ -1,6 +1,6 @@
 @inject IJSRuntime JS
 
-<div class="cell" 
+<div class="cell @GetPositionInBlock()" 
     tabindex="@Cell.Row @Cell.Column" 
     @ref="cellElement" 
     @onkeydown="KeyPressed" 
@@ -47,5 +47,31 @@
         || args.Key == "ArrowRight") {
             await ChangeFocus.InvokeAsync(new CellFocusEvent { Cell = Cell, ChangeEvent = args.Key });
         }
+    }
+
+    public string GetPositionInBlock()
+    {
+        var cellColumnInBlock = Cell.Column % 3;
+        var cellRowInBlock = Cell.Row % 3;
+
+        var positionString = "";
+        
+        if (cellRowInBlock == 0) {
+            positionString += "top ";
+        }
+        
+        if (cellRowInBlock == 2) {
+            positionString += "bottom ";
+        }
+
+        if (cellColumnInBlock == 0) {
+            positionString += "left ";
+        }
+        
+        if (cellColumnInBlock == 2) {
+            positionString += "right ";
+        }
+
+        return positionString;
     }
 }

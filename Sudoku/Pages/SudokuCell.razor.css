@@ -1,14 +1,26 @@
 .cell {
     height: 3em;
     width: 3em;
-    border-width: 0.1em;
-    border-style: solid;
+    border: 0.1em solid;
     cursor: pointer;
     text-align: center;
     vertical-align: middle;
     line-height: 3em;
     font-weight: bold;
     font-size: large;
+}
+
+.cell.left {
+    border-left: 0.15em solid;
+}
+.cell.right {
+    border-right: 0.15em solid;
+}
+.cell.top {
+    border-top: 0.15em solid;
+}
+.cell.bottom {
+    border-bottom: 0.15em solid;
 }
 
 @media only screen and (max-width: 600px) {
