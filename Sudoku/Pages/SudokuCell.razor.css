@@ -23,6 +23,10 @@
     border-bottom: 0.15em solid;
 }
 
+.cell.complete {
+    background-color: lightgreen;
+}
+
 @media only screen and (max-width: 600px) {
     .cell {
         height: 2em;
@@ -34,4 +38,8 @@
 
 .cell:focus {
     background-color: #d0d0d0;
+}
+
+.cell.complete:focus {
+    background-color: darkgreen;
 }

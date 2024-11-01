@@ -1,5 +1,6 @@
 @page "/"
 @inject IJSRuntime JS
+@inject ISudokuValidator SudokuValidator
 
 <PageTitle>Sudoku - Empty Grid</PageTitle>
 
@@ -10,7 +11,7 @@
         @for(int x = 0; x < 9; x++) {
             <div class="column">
                 @for (int y = 0; y < 9; y++) {
-                    <SudokuCell Cell="Grid[x, y]" SetValue="SetValue" ChangeFocus="ChangeFocus" />
+                    <SudokuCell Cell="Grid[x, y]" SetValue="SetValue" ChangeFocus="ChangeFocus" IsFinished="IsFinished" />
                 }
             </div>
         }
@@ -21,13 +22,15 @@
         }
     </div>
     <div class="grid-actions">
-        <SudokuAction Action="Delete" TriggerAction="Delete" />
+        <SudokuAction Size="large" Action="Delete" TriggerAction="Delete" />
+        <SudokuAction Size="large" Action="Check Grid" TriggerAction="CheckFinished" />
     </div>
 </div>
 
 @code {
     public Cell[,] Grid { get; set; } = new Cell[9, 9];
     public Cell? FocusedCell { get; set; } = null;
+    public bool IsFinished { get; set; } = false;
 
     protected override void OnInitialized()
     {
@@ -100,6 +103,13 @@
         if (FocusedCell != null) {
             FocusedCell.Value = null;
             await InvokeAsync(() => StateHasChanged());
+        }
+    }
+
+    public void CheckFinished()
+    {
+        if (SudokuValidator.IsValidSudokuGrid(Grid)) {
+            IsFinished = true;
         }
     }
 }

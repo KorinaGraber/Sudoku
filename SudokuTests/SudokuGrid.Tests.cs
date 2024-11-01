@@ -1,18 +1,36 @@
 using Bunit;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using Sudoku.Pages;
 
-public class SudokuGridTests
+public class SudokuGridTests : IDisposable
 {
+    TestContext Context;
+    Random Random;
+    Mock<ISudokuValidator> MockValidator;
+    IRenderedComponent<SudokuGrid> GridComponent;
+    
+    public SudokuGridTests()
+    {
+        Context = new TestContext();
+        Random = new Random();
+        MockValidator = new Mock<ISudokuValidator>();
+        Context.Services.AddSingleton(MockValidator.Object);
+        GridComponent = Context.RenderComponent<SudokuGrid>();
+    }
+
+    public void Dispose()
+    {
+        Context.Dispose();
+    }
+
     [Fact]
     public void Should_focus_the_designated_cell_when_no_change_event_is_provided()
     {
         // Arrange
-        using var context = new TestContext();
-        var random = new Random();
-        var gridComponent = context.RenderComponent<SudokuGrid>();
-        var currentColumn = random.Next(0, 8);
-        var currentRow = random.Next(0, 8);
-        var cellToFocus = gridComponent.Instance.Grid[currentColumn, currentRow];
+        var currentColumn = Random.Next(0, 8);
+        var currentRow = Random.Next(0, 8);
+        var cellToFocus = GridComponent.Instance.Grid[currentColumn, currentRow];
         var focusEvent = new CellFocusEvent
         {
             Cell = cellToFocus,
@@ -20,10 +38,10 @@ public class SudokuGridTests
         };
 
         // Act
-        gridComponent.Instance.ChangeFocus(focusEvent);
+        GridComponent.Instance.ChangeFocus(focusEvent);
 
         // Assert
-        Assert.Equal(cellToFocus, gridComponent.Instance.FocusedCell);
+        Assert.Equal(cellToFocus, GridComponent.Instance.FocusedCell);
         Assert.True(cellToFocus.Focused);
     }
 
@@ -39,12 +57,9 @@ public class SudokuGridTests
     public void Should_focus_the_next_row_when_down_arrow_is_selected(int currentRow)
     {
         // Arrange
-        using var context = new TestContext();
-        var random = new Random();
-        var gridComponent = context.RenderComponent<SudokuGrid>();
-        var currentColumn = random.Next(0, 8);
-        var currentCell = gridComponent.Instance.Grid[currentColumn, currentRow];
-        var nextCell = gridComponent.Instance.Grid[currentColumn, currentRow + 1];
+        var currentColumn = Random.Next(0, 8);
+        var currentCell = GridComponent.Instance.Grid[currentColumn, currentRow];
+        var nextCell = GridComponent.Instance.Grid[currentColumn, currentRow + 1];
         var focusEvent = new CellFocusEvent
         {
             Cell = currentCell,
@@ -52,10 +67,10 @@ public class SudokuGridTests
         };
 
         // Act
-        gridComponent.Instance.ChangeFocus(focusEvent);
+        GridComponent.Instance.ChangeFocus(focusEvent);
 
         // Assert
-        Assert.Equal(nextCell, gridComponent.Instance.FocusedCell);
+        Assert.Equal(nextCell, GridComponent.Instance.FocusedCell);
         Assert.True(nextCell.Focused);
     }
 
@@ -63,11 +78,8 @@ public class SudokuGridTests
     public void Should_ignore_the_down_arrow_when_row_8_is_selected()
     {
         // Arrange
-        using var context = new TestContext();
-        var random = new Random();
-        var gridComponent = context.RenderComponent<SudokuGrid>();
-        var currentColumn = random.Next(0, 8);
-        var currentCell = gridComponent.Instance.Grid[currentColumn, 8];
+        var currentColumn = Random.Next(0, 8);
+        var currentCell = GridComponent.Instance.Grid[currentColumn, 8];
         var focusEvent = new CellFocusEvent
         {
             Cell = currentCell,
@@ -75,10 +87,10 @@ public class SudokuGridTests
         };
 
         // Act
-        gridComponent.Instance.ChangeFocus(focusEvent);
+        GridComponent.Instance.ChangeFocus(focusEvent);
 
         // Assert
-        Assert.Null(gridComponent.Instance.FocusedCell);
+        Assert.Null(GridComponent.Instance.FocusedCell);
     }
 
     [Theory]
@@ -93,12 +105,9 @@ public class SudokuGridTests
     public void Should_focus_the_previous_row_when_up_arrow_is_selected(int currentRow)
     {
         // Arrange
-        using var context = new TestContext();
-        var random = new Random();
-        var gridComponent = context.RenderComponent<SudokuGrid>();
-        var currentColumn = random.Next(0, 8);
-        var currentCell = gridComponent.Instance.Grid[currentColumn, currentRow];
-        var previousCell = gridComponent.Instance.Grid[currentColumn, currentRow - 1];
+        var currentColumn = Random.Next(0, 8);
+        var currentCell = GridComponent.Instance.Grid[currentColumn, currentRow];
+        var previousCell = GridComponent.Instance.Grid[currentColumn, currentRow - 1];
         var focusEvent = new CellFocusEvent
         {
             Cell = currentCell,
@@ -106,10 +115,10 @@ public class SudokuGridTests
         };
 
         // Act
-        gridComponent.Instance.ChangeFocus(focusEvent);
+        GridComponent.Instance.ChangeFocus(focusEvent);
 
         // Assert
-        Assert.Equal(previousCell, gridComponent.Instance.FocusedCell);
+        Assert.Equal(previousCell, GridComponent.Instance.FocusedCell);
         Assert.True(previousCell.Focused);
     }
     
@@ -117,11 +126,8 @@ public class SudokuGridTests
     public void Should_ignore_the_up_arrow_when_row_0_is_selected()
     {
         // Arrange
-        using var context = new TestContext();
-        var random = new Random();
-        var gridComponent = context.RenderComponent<SudokuGrid>();
-        var currentColumn = random.Next(0, 8);
-        var currentCell = gridComponent.Instance.Grid[currentColumn, 0];
+        var currentColumn = Random.Next(0, 8);
+        var currentCell = GridComponent.Instance.Grid[currentColumn, 0];
         var focusEvent = new CellFocusEvent
         {
             Cell = currentCell,
@@ -129,10 +135,10 @@ public class SudokuGridTests
         };
 
         // Act
-        gridComponent.Instance.ChangeFocus(focusEvent);
+        GridComponent.Instance.ChangeFocus(focusEvent);
 
         // Assert
-        Assert.Null(gridComponent.Instance.FocusedCell);
+        Assert.Null(GridComponent.Instance.FocusedCell);
     }
 
     [Theory]
@@ -147,12 +153,9 @@ public class SudokuGridTests
     public void Should_focus_the_next_column_when_right_arrow_is_selected(int currentColumn)
     {
         // Arrange
-        using var context = new TestContext();
-        var random = new Random();
-        var gridComponent = context.RenderComponent<SudokuGrid>();
-        var currentRow = random.Next(0, 8);
-        var currentCell = gridComponent.Instance.Grid[currentColumn, currentRow];
-        var nextCell = gridComponent.Instance.Grid[currentColumn + 1, currentRow];
+        var currentRow = Random.Next(0, 8);
+        var currentCell = GridComponent.Instance.Grid[currentColumn, currentRow];
+        var nextCell = GridComponent.Instance.Grid[currentColumn + 1, currentRow];
         var focusEvent = new CellFocusEvent
         {
             Cell = currentCell,
@@ -160,10 +163,10 @@ public class SudokuGridTests
         };
 
         // Act
-        gridComponent.Instance.ChangeFocus(focusEvent);
+        GridComponent.Instance.ChangeFocus(focusEvent);
 
         // Assert
-        Assert.Equal(nextCell, gridComponent.Instance.FocusedCell);
+        Assert.Equal(nextCell, GridComponent.Instance.FocusedCell);
         Assert.True(nextCell.Focused);
     }
     
@@ -171,11 +174,8 @@ public class SudokuGridTests
     public void Should_ignore_the_right_arrow_when_column_8_is_selected()
     {
         // Arrange
-        using var context = new TestContext();
-        var random = new Random();
-        var gridComponent = context.RenderComponent<SudokuGrid>();
-        var currentRow = random.Next(0, 8);
-        var currentCell = gridComponent.Instance.Grid[8, currentRow];
+        var currentRow = Random.Next(0, 8);
+        var currentCell = GridComponent.Instance.Grid[8, currentRow];
         var focusEvent = new CellFocusEvent
         {
             Cell = currentCell,
@@ -183,10 +183,10 @@ public class SudokuGridTests
         };
 
         // Act
-        gridComponent.Instance.ChangeFocus(focusEvent);
+        GridComponent.Instance.ChangeFocus(focusEvent);
 
         // Assert
-        Assert.Null(gridComponent.Instance.FocusedCell);
+        Assert.Null(GridComponent.Instance.FocusedCell);
     }
 
     [Theory]
@@ -201,12 +201,9 @@ public class SudokuGridTests
     public void Should_focus_the_previous_column_when_left_arrow_is_selected(int currentColumn)
     {
         // Arrange
-        using var context = new TestContext();
-        var random = new Random();
-        var gridComponent = context.RenderComponent<SudokuGrid>();
-        var currentRow = random.Next(0, 8);
-        var currentCell = gridComponent.Instance.Grid[currentColumn, currentRow];
-        var previousCell = gridComponent.Instance.Grid[currentColumn - 1, currentRow];
+        var currentRow = Random.Next(0, 8);
+        var currentCell = GridComponent.Instance.Grid[currentColumn, currentRow];
+        var previousCell = GridComponent.Instance.Grid[currentColumn - 1, currentRow];
         var focusEvent = new CellFocusEvent
         {
             Cell = currentCell,
@@ -214,10 +211,10 @@ public class SudokuGridTests
         };
 
         // Act
-        gridComponent.Instance.ChangeFocus(focusEvent);
+        GridComponent.Instance.ChangeFocus(focusEvent);
 
         // Assert
-        Assert.Equal(previousCell, gridComponent.Instance.FocusedCell);
+        Assert.Equal(previousCell, GridComponent.Instance.FocusedCell);
         Assert.True(previousCell.Focused);
     }
     
@@ -225,11 +222,8 @@ public class SudokuGridTests
     public void Should_ignore_the_left_arrow_when_column_0_is_selected()
     {
         // Arrange
-        using var context = new TestContext();
-        var random = new Random();
-        var gridComponent = context.RenderComponent<SudokuGrid>();
-        var currentRow = random.Next(0, 8);
-        var currentCell = gridComponent.Instance.Grid[0, currentRow];
+        var currentRow = Random.Next(0, 8);
+        var currentCell = GridComponent.Instance.Grid[0, currentRow];
         var focusEvent = new CellFocusEvent
         {
             Cell = currentCell,
@@ -237,10 +231,10 @@ public class SudokuGridTests
         };
 
         // Act
-        gridComponent.Instance.ChangeFocus(focusEvent);
+        GridComponent.Instance.ChangeFocus(focusEvent);
 
         // Assert
-        Assert.Null(gridComponent.Instance.FocusedCell);
+        Assert.Null(GridComponent.Instance.FocusedCell);
     }
 
     [Theory]
@@ -256,20 +250,17 @@ public class SudokuGridTests
     public void Should_update_the_value_of_the_focused_cell_when_a_number_is_entered(string numberAsString)
     {
         // Arrange
-        using var context = new TestContext();
-        var random = new Random();
-        var gridComponent = context.RenderComponent<SudokuGrid>();
-        var currentColumn = random.Next(0, 8);
-        var currentRow = random.Next(0, 8);
+        var currentColumn = Random.Next(0, 8);
+        var currentRow = Random.Next(0, 8);
         var expectedValue = int.Parse(numberAsString);
-        var focusedCell = gridComponent.Instance.Grid[currentColumn, currentRow];
-        gridComponent.Instance.FocusedCell = focusedCell;
+        var focusedCell = GridComponent.Instance.Grid[currentColumn, currentRow];
+        GridComponent.Instance.FocusedCell = focusedCell;
 
         // Act
-        gridComponent.Instance.NumberEntered(numberAsString);
+        GridComponent.Instance.NumberEntered(numberAsString);
 
         // Assert
-        Assert.Equal(expectedValue, gridComponent.Instance.FocusedCell.Value);
+        Assert.Equal(expectedValue, GridComponent.Instance.FocusedCell.Value);
     }
 
     [Theory]
@@ -278,42 +269,66 @@ public class SudokuGridTests
     public void Should_ignore_an_update_if_the_value_is_out_of_range(string numberAsString)
     {
         // Arrange
-        using var context = new TestContext();
-        var random = new Random();
-        var gridComponent = context.RenderComponent<SudokuGrid>();
-        var currentColumn = random.Next(0, 8);
-        var currentRow = random.Next(0, 8);
+        var currentColumn = Random.Next(0, 8);
+        var currentRow = Random.Next(0, 8);
         var expectedValue = int.Parse(numberAsString);
-        var oldValue = random.Next();
-        var focusedCell = gridComponent.Instance.Grid[currentColumn, currentRow];
+        var oldValue = Random.Next();
+        var focusedCell = GridComponent.Instance.Grid[currentColumn, currentRow];
         focusedCell.Value = oldValue;
-        gridComponent.Instance.FocusedCell = focusedCell;
+        GridComponent.Instance.FocusedCell = focusedCell;
 
         // Act
-        gridComponent.Instance.NumberEntered(numberAsString);
+        GridComponent.Instance.NumberEntered(numberAsString);
 
         // Assert
-        Assert.Equal(oldValue, gridComponent.Instance.FocusedCell.Value);
+        Assert.Equal(oldValue, GridComponent.Instance.FocusedCell.Value);
     }
 
     [Fact]
     public void Should_delete_the_value_of_the_focused_cell()
     {
         // Arrange
-        using var context = new TestContext();
-        var random = new Random();
-        var gridComponent = context.RenderComponent<SudokuGrid>();
-        var currentColumn = random.Next(0, 8);
-        var currentRow = random.Next(0, 8);
-        var oldValue = random.Next();
-        var focusedCell = gridComponent.Instance.Grid[currentColumn, currentRow];
+        var currentColumn = Random.Next(0, 8);
+        var currentRow = Random.Next(0, 8);
+        var oldValue = Random.Next();
+        var focusedCell = GridComponent.Instance.Grid[currentColumn, currentRow];
         focusedCell.Value = oldValue;
-        gridComponent.Instance.FocusedCell = focusedCell;
+        GridComponent.Instance.FocusedCell = focusedCell;
 
         // Act
-        gridComponent.Instance.Delete();
+        GridComponent.Instance.Delete();
 
         // Assert
-        Assert.Null(gridComponent.Instance.FocusedCell.Value);
+        Assert.Null(GridComponent.Instance.FocusedCell.Value);
+    }
+
+    [Fact]
+    public void Should_mark_the_grid_as_finished_if_the_validator_returns_true()
+    {
+        // Arrange
+        MockValidator.Setup(x => x.IsValidSudokuGrid(It.IsAny<Cell[,]>()))
+            .Returns(true);
+        GridComponent.Instance.IsFinished = false;
+
+        // Act
+        GridComponent.Instance.CheckFinished();
+
+        // Assert
+        Assert.True(GridComponent.Instance.IsFinished);
+    }
+
+    [Fact]
+    public void Should_not_mark_the_grid_as_finished_if_the_validator_returns_false()
+    {
+        // Arrange
+        MockValidator.Setup(x => x.IsValidSudokuGrid(It.IsAny<Cell[,]>()))
+            .Returns(false);
+        GridComponent.Instance.IsFinished = false;
+
+        // Act
+        GridComponent.Instance.CheckFinished();
+
+        // Assert
+        Assert.False(GridComponent.Instance.IsFinished);
     }
 }

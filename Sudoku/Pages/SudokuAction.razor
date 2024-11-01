@@ -1,8 +1,11 @@
-<button class="btn btn-default cell-action" @onmousedown="@(e => TriggerAction.InvokeAsync(Action))" @onmousedown:preventDefault="true">@Action</button>
+<button class="btn btn-default cell-action @Size" @onmousedown="@(e => TriggerAction.InvokeAsync(Action))" @onmousedown:preventDefault="true">@Action</button>
 
 @code {
     [Parameter]
     public string Action { get; set; } = "";
+    
+    [Parameter]
+    public string Size { get; set; } = "";
 
     [Parameter]
     public EventCallback<string> TriggerAction { get; set; }

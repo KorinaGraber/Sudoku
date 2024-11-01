@@ -9,11 +9,19 @@
     font-size: large;
 }
 
+.cell-action.large {
+    width: 9em;
+}
+
 @media only screen and (max-width: 600px) {
     .cell-action {
         height: 2em;
         width: 2em;
         line-height: 2em;
         font-size: medium;
+    }
+
+    .cell-action.large {
+        width: 6em;
     }
 }
