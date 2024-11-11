@@ -7,6 +7,9 @@
     @onfocusin=@(e => ChangeFocus.InvokeAsync(new CellFocusEvent { Cell = Cell }))>@Cell.Value</div>
 
 @code {
+    // We need to circumvent the recommendation of using auto properties for parameters in order to allow for focusing via arrow keys
+    // The parent component will mark a cell as focused which will indicate the we need to programmatically focus the appropriate element
+    #pragma warning disable BL0007
     private Cell _cell = new Cell(0, 0);
     [Parameter]
     public Cell Cell { 
@@ -18,6 +21,7 @@
             }
         }
     }
+    #pragma warning restore BL0007
 
     [Parameter]
     public SudokuValidationState ValidationState { get; set; } = SudokuValidationState.Incomplete;
