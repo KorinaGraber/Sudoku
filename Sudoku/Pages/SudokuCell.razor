@@ -1,6 +1,6 @@
 @inject IJSRuntime JS
 
-<div class="cell @GetPositionInBlock() @(IsFinished ? "complete " : "")" 
+<div class="cell @GetPositionInBlock() @GetValidationStateClass()" 
     tabindex="@Cell.Row @Cell.Column" 
     @ref="cellElement" 
     @onkeydown="KeyPressed" 
@@ -20,7 +20,7 @@
     }
 
     [Parameter]
-    public bool IsFinished { get; set; } = false;
+    public SudokuValidationState ValidationState { get; set; } = SudokuValidationState.Incomplete;
 
     [Parameter]
     public EventCallback<int?> SetValue { get; set; }
@@ -76,5 +76,17 @@
         }
 
         return positionString;
+    }
+
+    public string GetValidationStateClass()
+    {
+        switch (ValidationState) {
+            case SudokuValidationState.Complete:
+                return "complete";
+            case SudokuValidationState.Invalid:
+                return "invalid";
+            default:
+                return "";
+        }
     }
 }

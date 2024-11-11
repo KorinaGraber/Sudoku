@@ -300,4 +300,24 @@ public class SudokuCellTests
         // Assert
         Assert.Equal("bottom right ", positionString);
     }
+
+    [Theory]
+    [InlineData(SudokuValidationState.Complete, "complete")]
+    [InlineData(SudokuValidationState.Invalid, "invalid")]
+    [InlineData(SudokuValidationState.Incomplete, "")]
+    public void Should_return_the_appropriate_class_for_the_current_validation_state(SudokuValidationState currentState, string expectedClass)
+    {
+        // Arrange
+        using var context = new TestContext();
+        var cellComponent = context.RenderComponent<SudokuCell>();
+        #pragma warning disable BL0005
+        cellComponent.Instance.ValidationState = currentState;
+        #pragma warning restore BL0005
+
+        // Act
+        var resultClass = cellComponent.Instance.GetValidationStateClass();
+
+        // Assert
+        Assert.Equal(expectedClass, resultClass);
+    }
 }

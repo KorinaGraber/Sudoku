@@ -27,6 +27,10 @@
     background-color: lightgreen;
 }
 
+.cell.invalid {
+    background-color: lightcoral;
+}
+
 @media only screen and (max-width: 600px) {
     .cell {
         height: 2em;
@@ -42,4 +46,8 @@
 
 .cell.complete:focus {
     background-color: darkgreen;
+}
+
+.cell.invalid:focus {
+    background-color: red;
 }

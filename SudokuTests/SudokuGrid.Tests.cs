@@ -302,35 +302,20 @@ public class SudokuGridTests : IDisposable
         Assert.Null(GridComponent.Instance.FocusedCell.Value);
     }
 
-    [Fact]
-    public void Should_mark_the_grid_as_finished_if_the_validator_returns_complete()
-    {
-        // Arrange
-        MockValidator.Setup(x => x.ValidateSudokuGrid(It.IsAny<Cell[,]>()))
-            .Returns(SudokuValidationState.Complete);
-        GridComponent.Instance.IsFinished = false;
-
-        // Act
-        GridComponent.Instance.CheckFinished();
-
-        // Assert
-        Assert.True(GridComponent.Instance.IsFinished);
-    }
-
     [Theory]
+    [InlineData(SudokuValidationState.Complete)]
     [InlineData(SudokuValidationState.Incomplete)]
     [InlineData(SudokuValidationState.Invalid)]
-    public void Should_not_mark_the_grid_as_finished_if_the_validator_returns_not_complete(SudokuValidationState notCompletedState)
+    public void Should_set_the_grid_state_to_the_result_of_the_validation_run(SudokuValidationState validationState)
     {
         // Arrange
         MockValidator.Setup(x => x.ValidateSudokuGrid(It.IsAny<Cell[,]>()))
-            .Returns(notCompletedState);
-        GridComponent.Instance.IsFinished = false;
+            .Returns(validationState);
 
         // Act
-        GridComponent.Instance.CheckFinished();
+        GridComponent.Instance.CheckGridState();
 
         // Assert
-        Assert.False(GridComponent.Instance.IsFinished);
+        Assert.Equal(validationState, GridComponent.Instance.GridState);
     }
 }

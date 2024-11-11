@@ -11,7 +11,7 @@
         @for(int x = 0; x < 9; x++) {
             <div class="column">
                 @for (int y = 0; y < 9; y++) {
-                    <SudokuCell Cell="Grid[x, y]" SetValue="SetValue" ChangeFocus="ChangeFocus" IsFinished="IsFinished" />
+                    <SudokuCell Cell="Grid[x, y]" SetValue="SetValue" ChangeFocus="ChangeFocus" ValidationState="GridState" />
                 }
             </div>
         }
@@ -23,14 +23,14 @@
     </div>
     <div class="grid-actions">
         <SudokuAction Size="large" Action="Delete" TriggerAction="Delete" />
-        <SudokuAction Size="large" Action="Check Grid" TriggerAction="CheckFinished" />
+        <SudokuAction Size="large" Action="Check Grid" TriggerAction="CheckGridState" />
     </div>
 </div>
 
 @code {
     public Cell[,] Grid { get; set; } = new Cell[9, 9];
     public Cell? FocusedCell { get; set; } = null;
-    public bool IsFinished { get; set; } = false;
+    public SudokuValidationState GridState { get; set; } = SudokuValidationState.Incomplete;
 
     protected override void OnInitialized()
     {
@@ -106,10 +106,8 @@
         }
     }
 
-    public void CheckFinished()
+    public void CheckGridState()
     {
-        if (SudokuValidator.ValidateSudokuGrid(Grid) == SudokuValidationState.Complete) {
-            IsFinished = true;
-        }
+        GridState = SudokuValidator.ValidateSudokuGrid(Grid);
     }
 }
