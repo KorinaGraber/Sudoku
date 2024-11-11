@@ -1,7 +1,14 @@
+public enum SudokuValidationState
+{
+    Complete,
+    Incomplete,
+    Invalid,
+}
+
 public interface ISudokuValidator
 {
-    public bool IsValidSudokuGrid(Cell[,] sudokuGrid);
-    public bool IsValidCellGroup(Cell[] cellGroup);
+    public SudokuValidationState ValidateSudokuGrid(Cell[,] sudokuGrid);
+    public SudokuValidationState ValidateCellGroup(Cell[] cellGroup);
 
     public Cell[] GetColumn(Cell[,] grid, int columnIndex);
     public Cell[] GetRow(Cell[,] grid, int rowIndex);
@@ -10,44 +17,62 @@ public interface ISudokuValidator
 
 public class SudokuValidator : ISudokuValidator
 {
-    public bool IsValidSudokuGrid(Cell[,] sudokuGrid)
+    public SudokuValidationState ValidateSudokuGrid(Cell[,] sudokuGrid)
     {
+        var hasIncompleteBlock = false;
+
         for(var columnIndex = 0; columnIndex < 9; columnIndex++) {
-            if (IsValidCellGroup(GetColumn(sudokuGrid, columnIndex)) == false) {
-                return false;
+            switch (ValidateCellGroup(GetColumn(sudokuGrid, columnIndex))) {
+                case SudokuValidationState.Invalid:
+                    return SudokuValidationState.Invalid;
+                case SudokuValidationState.Incomplete:
+                    hasIncompleteBlock = true;
+                    break;
             }
         }
 
         for(var rowIndex = 0; rowIndex < 9; rowIndex++) {
-            if (IsValidCellGroup(GetRow(sudokuGrid, rowIndex)) == false) {
-                return false;
+            switch (ValidateCellGroup(GetRow(sudokuGrid, rowIndex))) {
+                case SudokuValidationState.Invalid:
+                    return SudokuValidationState.Invalid;
+                case SudokuValidationState.Incomplete:
+                    hasIncompleteBlock = true;
+                    break;
             }
         }
 
         for(var blockIndex = 0; blockIndex < 9; blockIndex++) {
-            if (IsValidCellGroup(GetBlock(sudokuGrid, blockIndex)) == false) {
-                return false;
+            switch (ValidateCellGroup(GetBlock(sudokuGrid, blockIndex))) {
+                case SudokuValidationState.Invalid:
+                    return SudokuValidationState.Invalid;
+                case SudokuValidationState.Incomplete:
+                    hasIncompleteBlock = true;
+                    break;
             }
         }
 
-        return true;
+        return hasIncompleteBlock
+            ? SudokuValidationState.Incomplete
+            : SudokuValidationState.Complete;
     }
 
-    public bool IsValidCellGroup(Cell[] cellGroup)
+    public SudokuValidationState ValidateCellGroup(Cell[] cellGroup)
     {
         var tracker = new BlockValidationTracker();
 
         foreach(var cell in cellGroup) {
             if (cell.Value == null || cell.Value <= 0 || cell.Value > 9) {
-                return false;
+                return SudokuValidationState.Incomplete;
             }
 
             if (tracker.ValueIsDuplicate((int)cell.Value)) {
-                return false;
+                return SudokuValidationState.Invalid;
             }
         }
 
-        return tracker.IsValidBlock();
+        return tracker.IsCompleteBlock()
+            ? SudokuValidationState.Complete
+            : SudokuValidationState.Incomplete;
     }
 
     public Cell[] GetColumn(Cell[,] grid, int columnIndex)
@@ -103,7 +128,7 @@ class BlockValidationTracker
         return false;
     }
 
-    public bool IsValidBlock()
+    public bool IsCompleteBlock()
     {
         return ValidationDictionary[1]
             && ValidationDictionary[2]

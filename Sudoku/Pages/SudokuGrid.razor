@@ -108,7 +108,7 @@
 
     public void CheckFinished()
     {
-        if (SudokuValidator.IsValidSudokuGrid(Grid)) {
+        if (SudokuValidator.ValidateSudokuGrid(Grid) == SudokuValidationState.Complete) {
             IsFinished = true;
         }
     }

@@ -303,11 +303,11 @@ public class SudokuGridTests : IDisposable
     }
 
     [Fact]
-    public void Should_mark_the_grid_as_finished_if_the_validator_returns_true()
+    public void Should_mark_the_grid_as_finished_if_the_validator_returns_complete()
     {
         // Arrange
-        MockValidator.Setup(x => x.IsValidSudokuGrid(It.IsAny<Cell[,]>()))
-            .Returns(true);
+        MockValidator.Setup(x => x.ValidateSudokuGrid(It.IsAny<Cell[,]>()))
+            .Returns(SudokuValidationState.Complete);
         GridComponent.Instance.IsFinished = false;
 
         // Act
@@ -317,12 +317,14 @@ public class SudokuGridTests : IDisposable
         Assert.True(GridComponent.Instance.IsFinished);
     }
 
-    [Fact]
-    public void Should_not_mark_the_grid_as_finished_if_the_validator_returns_false()
+    [Theory]
+    [InlineData(SudokuValidationState.Incomplete)]
+    [InlineData(SudokuValidationState.Invalid)]
+    public void Should_not_mark_the_grid_as_finished_if_the_validator_returns_not_complete(SudokuValidationState notCompletedState)
     {
         // Arrange
-        MockValidator.Setup(x => x.IsValidSudokuGrid(It.IsAny<Cell[,]>()))
-            .Returns(false);
+        MockValidator.Setup(x => x.ValidateSudokuGrid(It.IsAny<Cell[,]>()))
+            .Returns(notCompletedState);
         GridComponent.Instance.IsFinished = false;
 
         // Act
