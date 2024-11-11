@@ -46,6 +46,55 @@ public class SudokuValidatorTests
     }
 
     [Theory]
+    [MemberData(nameof(ValidCompleteCellPlacement))]
+    public void Should_return_complete_if_the_cell_placement_would_finish_the_grid(int[] gridNumbers, int column, int row, int value)
+    {
+        // Arrange
+        var validator = new SudokuValidator();
+        var grid = getCellGridFromNumbers(gridNumbers);
+        var cell = new Cell(column, row) { Value = value };
+
+        // Act
+        var result = validator.ValidateCellPlacement(grid, cell);
+
+        // Assert
+        Assert.Equal(SudokuValidationState.Complete, result);
+    }
+
+    
+    [Theory]
+    [MemberData(nameof(ValidIncompleteCellPlacement))]
+    public void Should_return_incomplete_if_the_cell_placement_is_valid_for_an_incomplete_row(int[] gridNumbers, int column, int row, int value)
+    {
+        // Arrange
+        var validator = new SudokuValidator();
+        var grid = getCellGridFromNumbers(gridNumbers);
+        var cell = new Cell(column, row) { Value = value };
+
+        // Act
+        var result = validator.ValidateCellPlacement(grid, cell);
+
+        // Assert
+        Assert.Equal(SudokuValidationState.Incomplete, result);
+    }
+
+    [Theory]
+    [MemberData(nameof(InvalidCellPlacement))]
+    public void Should_return_invalid_if_the_cell_placement_would_invalidate_the_grid(int[] gridNumbers, int column, int row, int value)
+    {
+        // Arrange
+        var validator = new SudokuValidator();
+        var grid = getCellGridFromNumbers(gridNumbers);
+        var cell = new Cell(column, row) { Value = value };
+
+        // Act
+        var result = validator.ValidateCellPlacement(grid, cell);
+
+        // Assert
+        Assert.Equal(SudokuValidationState.Invalid, result);
+    }
+
+    [Theory]
     [InlineData(new[]{ 1, 2, 3, 4, 5, 6, 7, 8, 9 })]
     [InlineData(new[]{ 3, 8, 9, 4, 2, 7, 6, 5, 1 })]
     [InlineData(new[]{ 7, 3, 4, 2, 5, 6, 1, 8, 9 })]
@@ -114,7 +163,6 @@ public class SudokuValidatorTests
     [InlineData(new[]{ 1, 2, 0, 4, 5, 6, 7, 8, 9 })]
     [InlineData(new[]{ 3, 8, 9, 4, 2, 0, 6, 5, 1 })]
     [InlineData(new[]{ 7, 3, 4, 0, 5, 6, 1, 8, 9 })]
-    [InlineData(new[]{ 6, 5, 8, 2, 0, 4, 1, 8, 3 })]
     [InlineData(new[]{ 2, 4, 7, 5, 8, 6, 3, 0, 9 })]
     [InlineData(new[]{ 5, 0, 8, 9, 6, 4, 2, 1, 7 })]
     [InlineData(new[]{ 4, 9, 5, 0, 2, 8, 3, 6, 1 })]
@@ -320,6 +368,131 @@ public class SudokuValidatorTests
                 6, 8, 9, 7, 3, 2, 5, 4, 1,
                 2, 4, 1, 5, 0, 8, 6, 7, 3,
             }},
+        };
+
+    public static IEnumerable<object[]> ValidCompleteCellPlacement =>
+        new List<object[]>
+        {
+            new object[] { new int[] {
+                0, 2, 6, 3, 5, 9, 4, 1, 8,
+                4, 5, 8, 1, 6, 7, 2, 3, 9,
+                9, 1, 3, 8, 2, 4, 7, 6, 5,
+                1, 6, 2, 9, 7, 5, 3, 8, 4,
+                3, 9, 4, 2, 8, 6, 1, 5, 7,
+                8, 7, 5, 4, 1, 3, 9, 2, 6,
+                5, 3, 7, 6, 4, 1, 8, 9, 2,
+                6, 8, 9, 7, 3, 2, 5, 4, 1,
+                2, 4, 1, 5, 9, 8, 6, 7, 3,
+            }, 0, 0, 7},
+            new object[] { new int[] {
+                7, 2, 6, 3, 5, 9, 4, 1, 8,
+                4, 5, 8, 1, 6, 7, 2, 3, 9,
+                9, 1, 3, 8, 2, 4, 7, 6, 5,
+                1, 6, 2, 9, 7, 5, 3, 8, 4,
+                3, 9, 4, 2, 8, 6, 1, 5, 7,
+                8, 7, 5, 4, 1, 3, 9, 2, 6,
+                5, 3, 7, 6, 4, 1, 8, 9, 2,
+                6, 8, 9, 7, 3, 2, 5, 4, 1,
+                2, 4, 1, 5, 9, 8, 0, 7, 3,
+            }, 6, 8, 6},
+            new object[] { new int[] {
+                7, 2, 6, 3, 5, 9, 4, 1, 8,
+                4, 5, 8, 1, 6, 7, 2, 3, 9,
+                9, 1, 3, 8, 2, 4, 7, 6, 5,
+                1, 6, 2, 9, 7, 5, 3, 8, 4,
+                3, 9, 4, 0, 8, 6, 1, 5, 7,
+                8, 7, 5, 4, 1, 3, 9, 2, 6,
+                5, 3, 7, 6, 4, 1, 8, 9, 2,
+                6, 8, 9, 7, 3, 2, 5, 4, 1,
+                2, 4, 1, 5, 9, 8, 6, 7, 3,
+            }, 3, 4, 2},
+        };
+
+    public static IEnumerable<object[]> ValidIncompleteCellPlacement =>
+        new List<object[]>
+        {
+            new object[] { new int[] {
+                0, 0, 0, 3, 9, 0, 0, 1, 0,
+                5, 0, 1, 0, 0, 0, 0, 4, 0,
+                9, 0, 0, 7, 0, 0, 5, 0, 0,
+                6, 0, 2, 5, 3, 0, 0, 7, 0,
+                0, 0, 0, 0, 7, 0, 0, 0, 8,
+                7, 0, 0, 8, 0, 0, 9, 0, 3,
+                8, 0, 3, 0, 1, 0, 0, 9, 0,
+                0, 9, 0, 2, 0, 6, 0, 0, 7,
+                4, 0, 0, 0, 0, 3, 0, 6, 1,
+            }, 0, 0, 1},
+            new object[] { new int[] {
+                0, 0, 0, 3, 9, 0, 0, 1, 0,
+                5, 0, 1, 0, 0, 0, 0, 4, 0,
+                9, 0, 0, 7, 0, 0, 5, 0, 0,
+                6, 0, 2, 5, 3, 0, 0, 7, 0,
+                0, 0, 0, 0, 7, 0, 0, 0, 8,
+                7, 0, 0, 8, 0, 0, 9, 0, 3,
+                8, 0, 3, 0, 1, 0, 0, 9, 0,
+                0, 9, 0, 2, 0, 6, 0, 0, 7,
+                4, 0, 0, 0, 0, 3, 0, 6, 1,
+            }, 0, 0, 2},
+            new object[] { new int[] {
+                0, 0, 0, 3, 9, 0, 0, 1, 0,
+                5, 0, 1, 0, 0, 0, 0, 4, 0,
+                9, 0, 0, 7, 0, 0, 5, 0, 0,
+                6, 0, 2, 5, 3, 0, 0, 7, 0,
+                0, 0, 0, 0, 7, 0, 0, 0, 8,
+                7, 0, 0, 8, 0, 0, 9, 0, 3,
+                8, 0, 3, 0, 1, 0, 0, 9, 0,
+                0, 9, 0, 2, 0, 6, 0, 0, 7,
+                4, 0, 0, 0, 0, 3, 0, 6, 1,
+            }, 6, 8, 8},
+            new object[] { new int[] {
+                0, 0, 0, 3, 9, 0, 0, 1, 0,
+                5, 0, 1, 0, 0, 0, 0, 4, 0,
+                9, 0, 0, 7, 0, 0, 5, 0, 0,
+                6, 0, 2, 5, 3, 0, 0, 7, 0,
+                0, 0, 0, 0, 7, 0, 0, 0, 8,
+                7, 0, 0, 8, 0, 0, 9, 0, 3,
+                8, 0, 3, 0, 1, 0, 0, 9, 0,
+                0, 9, 0, 2, 0, 6, 0, 0, 7,
+                4, 0, 0, 0, 0, 3, 0, 6, 1,
+            }, 3, 4, 1},
+        };
+
+    public static IEnumerable<object[]> InvalidCellPlacement =>
+        new List<object[]>
+        {
+            new object[] { new int[] {
+                0, 0, 0, 3, 9, 0, 0, 1, 0,
+                5, 0, 1, 0, 0, 0, 0, 4, 0,
+                9, 0, 0, 7, 0, 0, 5, 0, 0,
+                6, 0, 2, 5, 3, 0, 0, 7, 0,
+                0, 0, 0, 0, 7, 0, 0, 0, 8,
+                7, 0, 0, 8, 0, 0, 9, 0, 3,
+                8, 0, 3, 0, 1, 0, 0, 9, 0,
+                0, 9, 0, 2, 0, 6, 0, 0, 7,
+                4, 0, 0, 0, 0, 3, 0, 6, 1,
+            }, 0, 0, 5},
+            new object[] { new int[] {
+                0, 0, 0, 3, 9, 0, 0, 1, 0,
+                5, 0, 1, 0, 0, 0, 0, 4, 0,
+                9, 0, 0, 7, 0, 0, 5, 0, 0,
+                6, 0, 2, 5, 3, 0, 0, 7, 0,
+                0, 0, 0, 0, 7, 0, 0, 0, 8,
+                7, 0, 0, 8, 0, 0, 9, 0, 3,
+                8, 0, 3, 0, 1, 0, 0, 9, 0,
+                0, 9, 0, 2, 0, 6, 0, 0, 7,
+                4, 0, 0, 0, 0, 3, 0, 6, 1,
+            }, 6, 8, 3},
+            new object[] { new int[] {
+                0, 0, 0, 3, 9, 0, 0, 1, 0,
+                5, 0, 1, 0, 0, 0, 0, 4, 0,
+                9, 0, 0, 7, 0, 0, 5, 0, 0,
+                6, 0, 2, 5, 3, 0, 0, 7, 0,
+                0, 0, 0, 0, 7, 0, 0, 0, 8,
+                7, 0, 0, 8, 0, 0, 9, 0, 3,
+                8, 0, 3, 0, 1, 0, 0, 9, 0,
+                0, 9, 0, 2, 0, 6, 0, 0, 7,
+                4, 0, 0, 0, 0, 3, 0, 6, 1,
+            }, 3, 4, 5},
         };
 
     public static IEnumerable<object[]> GetColumnFromGridData =>

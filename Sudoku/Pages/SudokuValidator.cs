@@ -8,6 +8,7 @@ public enum SudokuValidationState
 public interface ISudokuValidator
 {
     public SudokuValidationState ValidateSudokuGrid(Cell[,] sudokuGrid);
+    public SudokuValidationState ValidateCellPlacement(Cell[,] grid, Cell cell);
     public SudokuValidationState ValidateCellGroup(Cell[] cellGroup);
 
     public Cell[] GetColumn(Cell[,] grid, int columnIndex);
@@ -56,17 +57,49 @@ public class SudokuValidator : ISudokuValidator
             : SudokuValidationState.Complete;
     }
 
+    public SudokuValidationState ValidateCellPlacement(Cell[,] grid, Cell cell)
+    {
+        grid[cell.Column, cell.Row].Value = cell.Value;
+        var hasIncompleteBlock = false;
+
+        switch (ValidateCellGroup(GetColumn(grid, cell.Column))) {
+            case SudokuValidationState.Invalid:
+                return SudokuValidationState.Invalid;
+            case SudokuValidationState.Incomplete:
+                hasIncompleteBlock = true;
+                break;
+        }
+
+        switch (ValidateCellGroup(GetRow(grid, cell.Row))) {
+            case SudokuValidationState.Invalid:
+                return SudokuValidationState.Invalid;
+            case SudokuValidationState.Incomplete:
+                hasIncompleteBlock = true;
+                break;
+        }
+
+        switch (ValidateCellGroup(GetBlock(grid, cell.Block))) {
+            case SudokuValidationState.Invalid:
+                return SudokuValidationState.Invalid;
+            case SudokuValidationState.Incomplete:
+                hasIncompleteBlock = true;
+                break;
+        }
+
+        return hasIncompleteBlock
+            ? SudokuValidationState.Incomplete
+            : SudokuValidationState.Complete;
+    }
+
     public SudokuValidationState ValidateCellGroup(Cell[] cellGroup)
     {
         var tracker = new BlockValidationTracker();
 
         foreach(var cell in cellGroup) {
-            if (cell.Value == null || cell.Value <= 0 || cell.Value > 9) {
-                return SudokuValidationState.Incomplete;
-            }
-
-            if (tracker.ValueIsDuplicate((int)cell.Value)) {
-                return SudokuValidationState.Invalid;
+            if (cell.Value != null && cell.Value > 0 && cell.Value <= 9) {
+                if (tracker.ValueIsDuplicate((int)cell.Value)) {
+                    return SudokuValidationState.Invalid;
+                }
             }
         }
 
