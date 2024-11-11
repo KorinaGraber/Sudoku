@@ -41,9 +41,9 @@
         }
     }
         
-    public async void SetValue(int? value)
+    public void SetValue(int? value)
     {
-        await JS.InvokeVoidAsync("console.log", $"From parent {value}");
+        GridState = SudokuValidationState.Incomplete;
     }
     
     public void ChangeFocus(CellFocusEvent value)
@@ -93,6 +93,7 @@
         if (FocusedCell != null && int.TryParse(numberAsString, out int intValue)) {
             if (intValue > 0 && intValue <= 9) {
                 FocusedCell.Value = intValue;
+                SetValue(intValue);
                 await InvokeAsync(() => StateHasChanged());
             }
         }
@@ -102,6 +103,7 @@
     {
         if (FocusedCell != null) {
             FocusedCell.Value = null;
+            SetValue(null);
             await InvokeAsync(() => StateHasChanged());
         }
     }
