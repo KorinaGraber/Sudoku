@@ -2,7 +2,8 @@ public class Cell {
     public int Row { get; set; }
     public int Column { get; set; }
     public int? Value { get; set; }
-    public bool Focused { get; set; }
+    public bool Editable { get; set; } = true;
+    public bool Focused { get; set; } = false;
 
     public int Block {
         get
