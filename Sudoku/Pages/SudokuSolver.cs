@@ -6,13 +6,13 @@ public interface ISudokuSolver
 public class SudokuSolver : ISudokuSolver
 {
     ISudokuValidator SudokuValidator;
-    int CurrentColumn;
-    int CurrentRow;
-    int CurrentValue;
-    Cell[,] Grid = new Cell[0, 0];
-    Stack<Cell> SolutionOperations = new Stack<Cell>();
+    public int CurrentColumn;
+    public int CurrentRow;
+    public int CurrentValue;
+    public Cell[,] Grid = new Cell[0, 0];
+    public Stack<Cell> SolutionOperations = new Stack<Cell>();
 
-    Cell CurrentCell { get => Grid[CurrentColumn, CurrentRow]; }
+    public virtual Cell CurrentCell { get => Grid[CurrentColumn, CurrentRow]; }
 
     public SudokuSolver(ISudokuValidator sudokuValidator)
     {
@@ -42,29 +42,20 @@ public class SudokuSolver : ISudokuSolver
     public Cell[,] SolveGrid(Cell[,] grid)
     {
         Grid = grid;
-        resetSolver();
+        ResetSolver();
 
         while (CurrentColumn < 8 || CurrentRow < 8)
         {
             if (CurrentCell.Editable == false) {
-                nextCell();
+                NextCell();
             } else {
-                CurrentCell.Value = CurrentValue;
-                var validationCheck = SudokuValidator.ValidateCellPlacement(grid, CurrentCell);
-
-                if (validationCheck == SudokuValidationState.Complete) {
-                    markValidOperation();
-                } else if (validationCheck == SudokuValidationState.Incomplete) {
-                    markValidOperation();
-                } else {
-                    tryNewOperation();
-                }
+                TryOperation();
             }
         }
-        return grid;
+        return Grid;
     }
 
-    private void resetSolver()
+    public void ResetSolver()
     {
         CurrentColumn = 0;
         CurrentRow = 0;
@@ -72,7 +63,21 @@ public class SudokuSolver : ISudokuSolver
         SolutionOperations = new Stack<Cell>();
     }
 
-    private void nextCell()
+    public virtual void TryOperation()
+    {
+        CurrentCell.Value = CurrentValue;
+        var validationCheck = SudokuValidator.ValidateCellPlacement(Grid, CurrentCell);
+
+        if (validationCheck == SudokuValidationState.Complete) {
+            MarkValidOperation();
+        } else if (validationCheck == SudokuValidationState.Incomplete) {
+            MarkValidOperation();
+        } else {
+            GetNextOperation();
+        }
+    }
+
+    public virtual void NextCell()
     {
         if (CurrentRow == 8) {
             CurrentColumn += 1;
@@ -83,13 +88,13 @@ public class SudokuSolver : ISudokuSolver
         CurrentValue = 1;
     }
 
-    private void markValidOperation()
+    public virtual void MarkValidOperation()
     {
         SolutionOperations.Push(CurrentCell);
-        nextCell();
+        NextCell();
     }
 
-    private void tryNewOperation()
+    public virtual void GetNextOperation()
     {
         if (CurrentValue == 9) {
             CurrentCell.Value = 0;
@@ -97,7 +102,7 @@ public class SudokuSolver : ISudokuSolver
             CurrentColumn = previousCell.Column;
             CurrentRow = previousCell.Row;
             CurrentValue = previousCell.Value ?? 1;
-            tryNewOperation();
+            GetNextOperation();
         } else {
             CurrentValue += 1;
         }

@@ -57,7 +57,7 @@ public class SudokuValidator : ISudokuValidator
             : SudokuValidationState.Complete;
     }
 
-    public SudokuValidationState ValidateCellPlacement(Cell[,] grid, Cell cell)
+    public virtual SudokuValidationState ValidateCellPlacement(Cell[,] grid, Cell cell)
     {
         grid[cell.Column, cell.Row].Value = cell.Value;
         var hasIncompleteBlock = false;
